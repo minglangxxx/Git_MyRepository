@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		xmlns:p="http://www.springframework.org/schema/p" 
+		xmlns="http://www.springframework.org/schema/beans" 
+		xmlns:context="http://www.springframework.org/schema/context" 
+		xmlns:aop="http://www.springframework.org/schema/aop" 
+		xsi:schemaLocation="http://www.springframework.org/schema/beans 
+							http://www.springframework.org/schema/beans/spring-beans-4.2.xsd 
+							http://www.springframework.org/schema/context 
+							http://www.springframework.org/schema/context/spring-context-4.2.xsd 
+							http://www.springframework.org/schema/aop 
+							http://www.springframework.org/schema/aop/spring-aop-4.2.xsd ">
+	<!-- 准备工作，引入xmlns：aop命名空间（aop约束） -->
+	<!-- 配置目标对象 -->
+	<bean name="userServiceImpl" class="com.spring_day2.aop.UserServiceImpl"></bean>
+	<!-- 配置通知对象 -->
+	<bean name="myAdvice" class="com.spring_day2.aop.MyAdvice"></bean>
+	<!-- 配置将通知织入目标对象 -->
+	<aop:config>
+		<!-- 配置切入点
+			表达式	public void com.spring_day2.aop.UserServiceImpl.save()
+					void com.spring_day2.aop.UserServiceImpl.save()	（默认服务public）
+					* com.spring_day2.aop.UserServiceImpl.save()	（对返回值不做要求）
+					* com.spring_day2.aop.UserServiceImpl.*()		（表示针对该类下所有空参方法）
+					* com.spring_day2.aop.UserServiceImpl.*(..)		（表示对方法参数不做要求）
+					
+			最终形态：
+					* com.spring_day2.aop.*ServiceImpl.*(..)		（表示对该包下所有类名含有ServiceImpl的类的所有方法）
+					* com.spring_day2.aop..*ServiceImpl.*(..)		（表示对该包下以及该包下的子包）
+		 -->
+		<aop:pointcut expression="execution(* com.spring_day2.aop.*ServiceImpl.*(..))" id="pc"/>
+		<!-- 描述通知 -->
+		<aop:aspect ref="myAdvice">
+			<!-- myadvice中的before方法指定aop的前置通知before方法，然后切入到切入点中 -->
+			<!-- 前置 -->
+			<aop:before method="before" pointcut-ref="pc"/>
+			<!-- 后置（无异常） -->
+			<aop:after-returning method="afterNoExceptionReturning" pointcut-ref="pc"/>
+			<!-- 异常拦截通知 -->
+			<aop:after-throwing method="afterException" pointcut-ref="pc"/>
+			<!-- 环绕通知 -->
+			<aop:around method="around" pointcut-ref="pc"/>
+			<!-- 后置（有异常） -->
+			<aop:after method="afterAnythingReturning" pointcut-ref="pc"/>
+		</aop:aspect>
+	</aop:config>
+</beans>

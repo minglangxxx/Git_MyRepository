@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		xmlns:p="http://www.springframework.org/schema/p" 
+		xmlns="http://www.springframework.org/schema/beans" 
+		xmlns:context="http://www.springframework.org/schema/context" 
+		xsi:schemaLocation="http://www.springframework.org/schema/beans 
+							http://www.springframework.org/schema/beans/spring-beans-4.2.xsd 
+							http://www.springframework.org/schema/context 
+							http://www.springframework.org/schema/context/spring-context-4.2.xsd ">
+	<!-- 准备工作，引入xmlns：context（context约束）命名空间 -->
+	<!-- 扫描主键（指定扫描基础包下所有注解）
+		注意：扫描包时会扫描指定包下所有的子包
+	 -->
+	<context:component-scan base-package="com.spring_day2.demo"></context:component-scan>
+	
+	<bean name="car2" class="com.spring_day2.demo.Car">
+		<property name="color" value="blank"></property>
+		<property name="name" value="宝马"></property>
+	</bean>
+</beans>
