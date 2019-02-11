@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	
+	<!-- 指定连接池配置 -->
+	<properties	resource="db.perproties"></properties>
+	
+	<!-- 类型别名,让返回值类型更加简单 -->
+	<typeAliases>
+		<!-- 针对某一确定路径的文件 -->
+		<!-- <typeAlias type="com.mybatis_demo.pojo.User" alias="User"/> -->
+		<!-- 针对该包下的文件，但是这种用法要保证pojo包下都是pojo文件 -->
+		<package name="com.mybatis_demo.pojo"/>
+	</typeAliases>
+
+	<!-- 和spring整合后 environments配置将废除 -->
+	<environments default="development">
+		<environment id="development">
+			<!-- 使用jdbc事务管理 -->
+			<transactionManager type="JDBC" />
+			<!-- 数据库连接池 -->
+			<dataSource type="POOLED">
+				<property name="driver" value="${jdbc.driverClass}" />
+				<property name="url" value="${jdbc.jdbcUrl}" />
+				<property name="username" value="root" />
+				<property name="password" value="root" />
+			</dataSource>
+		</environment>
+	</environments>
+	
+	<!-- 告诉mybatis，mapper映射文件在哪 -->
+	<mappers>
+
+		<!-- 直接指定包下所有文件，但是这种情况要保障mapper.java文件和mapper.xml映射文件名称相同，在一个包下 -->
+		<package name="com.mybatis_demo.mapper"/>
+		
+	</mappers>
+</configuration>

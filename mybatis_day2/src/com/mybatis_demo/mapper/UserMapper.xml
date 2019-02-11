@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace：命名空间，用于隔离sql -->
+<!-- mapper标签写sql语句	 -->
+<mapper namespace="com.mybatis_demo.mapper.UserMapper">
+		
+	<!-- 根据用户名模糊查询 -->
+	<select id="findUserByQueryVo" parameterType="QueryVo" resultType="User">
+		select * from user where username like "%"#{user.username}"%"
+	</select>
+
+	<!-- 返回简单数据类型 -->
+	<select id="getCountUser" resultType="Integer">
+		select count(*) from user
+	</select>
+	
+	<!-- 返回封装类型 -->
+	<select id="findQueryByID" parameterType="QueryVo" resultType="QueryVo">
+		select * from queryVo where userID = #{userID}
+	</select>
+	
+<!-- ================================================================= -->
+	<!-- 假如数据库字段和pojo类的属性名并不完全相同，mybatis无法自动匹配，
+		  此时就需要手动完成映射
+		  id为引用id
+		  type为pojo类名(返回值类型)
+		  column对应数据库字段名
+		  property对应pojo类属性名
+		  
+		  用resultType的时候，要保证结果集的列名与java对象的属性相同，
+		  而resultMap则不用,还可以自己设置拿到resultMap标签设置的内容
+	 -->
+	<resultMap id="orders" type="Orders">
+		<result column="user_id" property="userId" />
+	</resultMap>
+	<select id="selectOrdersList" resultMap="orders">
+		SELECT id, user_id, number, createtime, note FROM orders
+	</select>
+	
+<!-- ================================================================= -->
+	<!-- 一对一关联的联合查询时，使用resultMap必须把查询的每个字段和属性都映射
+		一个order对应一个user，查询返回值是List<Orders>
+	 -->
+	<resultMap type="Orders" id="order">
+		<result column="id" property="id" />
+		<result column="user_id" property="userId" />
+		<result column="number" property="number" />
+		<result column="createtime" property="createtime" />
+		<!-- 一对一关联的联合查询内部的联合查询对象，即order内部的user属性
+			association对应一对一关联的联合,property对象属性名称
+			javaType对象属性类型,column对应外键字段名称
+		 -->
+		<association property="user" javaType="User">
+			<result column="username" property="username" />
+		</association>
+	</resultMap>
+	<select id="selectOrders" resultMap="order">
+		SELECT 
+		o.id,
+		o.user_id,
+		o.number,
+		o.createtime,
+		u.username 
+		FROM orders AS o 
+		LEFT JOIN user AS u 
+		ON o.user_id=u.id
+	</select>
+	
+<!-- ================================================================= -->
+	<!-- 一对多查询
+		一个user对应多个order
+		查询返回值是List<User>
+	 -->
+	 <resultMap type="User" id="user">
+	 	<!-- id标签是指pojo对象的唯一标识，并不一定是主键(一般情况下是主键)
+	 		 下面只写了两个的原因是因为后面sql语句中暂时只需要用到这两个
+	 	 -->
+	 	<id column="id" property="id"/>
+		<result column="username" property="username" />
+		<!-- 一对多,使用collection标签
+			property一对多的属性名称
+			oftype指定每一个list元素的类型
+		 -->
+		<collection property="ordersList" ofType="Orders" >
+			<id column="id" property="id"/>
+			<result column="user_id" property="userId"/>
+			<result column="number" property="number"/>
+			<result column="createtime" property="createtime"/>
+		</collection>
+	 </resultMap>
+	 <select id="selectUserList" resultMap="user">
+	 SELECT 
+	 o.id,
+	 o.user_id,
+	 o.number,
+	 o.createtime,
+	 u.username 
+	 FROM user as u 
+	 LEFT JOIN orders as o 
+	 ON o.user_id=u.id
+	 </select>
+</mapper>
