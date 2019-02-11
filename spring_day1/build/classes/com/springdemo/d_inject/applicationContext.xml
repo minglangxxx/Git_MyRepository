@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		xmlns:p="http://www.springframework.org/schema/p"
+		xmlns="http://www.springframework.org/schema/beans" 
+		xsi:schemaLocation="http://www.springframework.org/schema/beans 
+				http://www.springframework.org/schema/beans/spring-beans-4.2.xsd ">
+	
+<!--	set方式注入  	-->
+	<bean name="user" class="com.springdemo.d_inject.User" >
+		<!--	值类型注入：为名为user的对象的name属性注入值tom	  	-->
+		<property name="name" value="tom"></property>
+		<property name="age" value="18"></property>
+		<!--	引用类型注入：把car对象注入到user对象的car属性中，ref：引用	  -->
+		<property name="car" ref="car"></property>
+	</bean>
+	<!--	把car对象配置到容器中	  -->
+	<bean name="car" class="com.springdemo.d_inject.Car">
+		<property name="color" value="red"></property>
+		<property name="name" value="Benz"></property>
+	</bean>
+<!-- ============================================================== -->
+
+<!-- 构造函数注入 -->
+	<bean name="user2" class="com.springdemo.d_inject.User">
+		<!-- 当同时存在参数相同但是顺序不同的构造参数时，index是参数索引，可以辅助决定使用哪一个参数
+			那假如两个顺序相同，但是值类型不同时，就可以用type属性确定使用哪一个值类型属性的构造函数
+		 -->
+		<constructor-arg name="name" value="12" index="0" type="java.lang.Integer"></constructor-arg>
+		<constructor-arg name="car" ref="car2" index="1"></constructor-arg>
+	</bean>
+	<bean name="car2" class="com.springdemo.d_inject.Car"></bean>
+	
+<!-- ============================================================== -->
+
+<!-- p命名空间 -->
+	<!-- 
+		1.导入P命名空间xmlns:p="http://www.springframework.org/schema/p"
+		2.使用P：属性完成注入
+			|-	p:属性名="值"				完成属性值类型的注入
+			|-	p:对象名-ref="bean值"		完成对象类型值的注入
+	 -->
+	<bean name="user3" class="com.springdemo.d_inject.User" p:name="Sam" p:age="20" p:car-ref="car"></bean>
+<!-- ============================================================== -->	
+	
+<!-- spel表达式 -->
+	<!-- 取其他对象类型的属性值使用，但是对象注入属性的ref不行 -->
+	<bean name="user4" class="com.springdemo.d_inject.User">
+		<property name="name" value="#{user.name}"></property>
+		<property name="age" value="#{user3.age}"></property>
+		<property name="car" ref="car"></property>
+	</bean>
+	
+	
+<!-- ===============================-==复杂类型注入========================================= -->		
+
+	<bean name="cb" class="com.springdemo.d_inject.CollectionBean">
+	<!-- array注入	-->
+		<!-- 1.如果数组只准备注入一个值（对象），直接使用value|ref -->
+		<!-- <property name="arr" value="tom"></property> -->
+		<!-- 2.多元素注入 -->
+		<property name="arr">
+			<array>
+				<value>tom</value>
+				<value>Bob</value>
+				<ref bean="user3"/>
+			</array>
+		</property>
+	<!-- list注入	 -->
+		<!-- 1.如果数组只准备注入一个值（对象），直接使用value|ref -->
+		<!-- <property name="list" value="jack"></property> -->
+		<property name="list">
+			<list>
+				<value>xml</value>
+				<value>chb</value>
+			</list>
+		</property>
+	<!-- map注入 -->
+		<property name="map">
+			<map>
+				<entry key="url" value="www.baidu.com"></entry>
+				<entry key="user" value="user2"></entry>
+				<entry key-ref="user2" value-ref="user3"></entry>
+			</map>
+		</property>
+	<!-- Properties注入 	-->
+		<property name="prop">
+			<props>
+				<prop key="url">www.tencent.com</prop>
+				<prop key="xml">com.springdemo.day</prop>
+			</props>
+		</property>
+	</bean>
+
+</beans>
