@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace：命名空间，用于隔离sql，还有一个很重要的作用，后面会讲 -->
+<!-- mapper标签写sql语句	 -->
+<mapper namespace="com.mybatis_demo.mapper.UserMapper">
+	<!-- 通过id查询用户
+	 	parameterType指定传入参数数据类型
+		resultType用来sql映射文件中定义返回值类型
+		#的替代形参自动携带''
+	 	-->
+	<select id="findUserById" parameterType="Integer" resultType="User">
+		select * from user where id = #{value}
+	</select>
+	
+	<!-- 根据用户名称模糊查询用户列表
+		$查询时里面的形参必须是value
+		$的替代性参不带''
+	 -->
+	<select id="findUserByUsername" parameterType="String" resultType="com.mybatis_demo.pojo.User">
+		select * from user where username like '%${value}%'
+		<!-- 防止sql语句注入的写法select * from user where username like "%"#{value}"%" -->
+	</select>
+	
+	<!-- 添加用户 -->
+	<insert id="insertUser" parameterType="com.mybatis_demo.pojo.User">
+		<!-- 同时返回最新产生的id -->
+		<selectKey keyProperty="id" resultType="Integer" order="AFTER">
+			select LAST_INSERT_ID()
+		</selectKey>
+		insert into user (username,birthday,address,sex) 
+		values (#{username},#{birthday},#{address},#{sex})
+	</insert>
+	
+	<!-- 更新用户 -->
+	<update id="updateUserById" parameterType="com.mybatis_demo.pojo.User">
+		update user 
+		set username = #{username},sex = #{sex},birthday = #{birthday},
+		address = #{address} where id = #{id}		
+	</update>
+	
+	<!-- 删除用户 -->
+	<delete id="deleteUserById" parameterType="Integer">
+		delete from user where id = #{id}
+	</delete>
+
+</mapper>
