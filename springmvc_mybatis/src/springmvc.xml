@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+	<!-- 扫描注解 -->
+	<context:component-scan base-package="com.springmvc_mybatis"></context:component-scan>
+	
+	<!-- 注解驱动，就不需要单独配置处理器映射器和处理器适配器	 -->
+	<mvc:annotation-driven conversion-service="ConversionService"></mvc:annotation-driven>
+	
+	<!-- 配置Conveter转换器、用来转换日期，前后空格等等	 -->
+	<bean id="ConversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+		<!-- 配置转换器，可以配置多个 	-->
+		<property name="converters">
+			<list>
+				<bean class="com.springmvc_mybatis.converters.DateConverters"></bean>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 配置文件上传解析器		
+	id必须是这个,因为代码中并未使用注解，如果不是这个id无法匹配
+		 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 设置文件上传大小 -->
+		<property name="maxUploadSize" value="5000000000"></property>
+	</bean>
+<!-- 	
+	配置处理器映射器 
+		从spring3.1版本开始，废除了DefaultAnnotationHandlerMapping的使用，
+		推荐使用RequestMappingHandlerMapping完成注解式处理器映射
+	
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"></bean>
+	
+	配置处理器适配器
+		从spring3.1版本开始，废除了AnnotationMethodHandlerAdapter的使用，
+		推荐使用RequestMappingHandlerAdapter完成注解式处理器适配。
+	
+	 <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"></bean>
+ -->
+ 
+ 	<!-- 配置视图解析器，也可以说是视图定位 	-->
+ 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+ 		<!-- 配置逻辑视图的前缀 -->
+ 		<property name="prefix" value="/WEB-INF/jsp/"></property>
+ 		<!-- 配置逻辑视图的后缀 -->
+ 		<property name="suffix" value=".jsp"></property>
+ 	</bean>
+ 	
+</beans>
